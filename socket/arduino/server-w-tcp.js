@@ -135,16 +135,16 @@ tcpServer.on('connection',function(socket){
 	//When the TCP connection feels social. 
     socket.on('data',function(data){
 
-		//Jordan's CC number here
+		  //Jordan's CC number here
         console.log('This just in - ' + data );
 
-		//Verbose.
+		  //Verbose.
         socket.write('I got that thing you sent me!\r\n');
         
-        //For every blessed being
+		  //For every blessed being
         for (g in io.clients) {
 
-				//Remind them what they are to me.
+			//Remind them what they are to me.
             var client = io.clients[g];
 
 				//Yell at them from across the street. 
