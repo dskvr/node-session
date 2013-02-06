@@ -123,16 +123,16 @@ var tcpServer = net.createServer(function (socket) {
 
 tcpServer.on('connection',function(socket){
 
-	//Remind the socket who they're talking to "You talking to me?"
+		//Remind the socket who they're talking to "You talking to me?"
     socket.write('Word, I\'m TCP. Pleasure is all mine I\'m sure.\r\n');
 
 	//Again, we like to brag.
     console.log( tcpServer.connections + ' people are 1337');
     
-	//Welcome! We're gonna force your socket into an array
+	 //Welcome! You're on the list
     tcpGuests.push(socket);
     
-	//When the TCP connection feels social. 
+	 //When the TCP connection feels social. 
     socket.on('data',function(data){
 
 		  //Jordan's CC number here
