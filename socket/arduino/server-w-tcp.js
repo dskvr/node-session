@@ -1,5 +1,7 @@
 /**
  * Important note: this application is not suitable for benchmarks!
+
+ * all you see is...
  */
 
 var http = require('http')
@@ -9,9 +11,6 @@ var http = require('http')
   , io = require('socket.io')
   , sys = require(process.binding('natives').util ? 'util' : 'sys')
   , server;
-  
-var tcpGuests = [];
-var chatGuests = [];
 
 server = http.createServer(function(req, res){
   // your normal server code
@@ -45,58 +44,118 @@ send404 = function(res){
 
 server.listen(8090);
 
+//HTTP Socket Connections (living)
+var httpGuests = [];
 
+//TCP Socket Connections (undead)
+var tcpGuests = [];
 
-// socket.io, I choose you
-// simplest chat application evar
+//A Socket
 var io = io.listen(server)
+
+//for your Buffer  				
   , buffer = [];
   
+//Connect to the HTTP Server's Socket
 io.on('connection', function(client){
-  client.send({ buffer: buffer });
-  client.broadcast.send({ announcement: client.sessionId + ' connected' });
+
+  //Send some data back to the client.
+  client.send({ 
+
+  	//Sync the buffer
+	  buffer: buffer 
+
+  });
+ 
+  //Broadcast some ish
+  client.broadcast.send({ 
+	
+	//Yeah, you're legit (We're fairly presumptuous)
+	announcement: client.sessionId + ', ohhhhhhhhhh bakaw bakaw bakaw' 
+
+  });
   
-  chatGuests.push(client);
+  //Register.
+  httpGuests.push(client);
   
+  //Poke.
   client.on('message', function(message){
+	
+	// Prepare the message for debugging.
     var msg = { message: [client.sessionId, message] };
+
+	// Push the message into the buffer.
     buffer.push(msg);
+
+	//Leaky Pipes
     if (buffer.length > 15) buffer.shift();
+
+	  //Send the client a debugging update (tidings)
     client.broadcast.send(msg);
     
-    //send msg to tcp connections
+    //For each TCP Connection
     for (g in tcpGuests) {
+		
+		    //Send some orders
         tcpGuests[g].write(message);
+
     }
   });
 
+  //How rude, no goodbye?
   client.on('disconnect', function(){
-    client.broadcast.send({ announcement: client.sessionId + ' disconnected' });
+
+	  //Tell them off.
+    client.broadcast.send({ announcement: client.sessionId + ' left the cult.' });
+
   });
+
 });
 
-//tcp socket server
+//Hey bro, can I interest you in some TCP?
 var tcpServer = net.createServer(function (socket) {
-  console.log('tcp server running on port 1337');
-  console.log('web server running on http://localhost:8090');
+ 
+  //We like to brag.
+  console.log('TCP:1337');
+  console.log('HTTP:80');
+
 });
 
+//When a client connects.
 tcpServer.on('connection',function(socket){
-    socket.write('connected to the tcp server\r\n');
-    console.log('num of connections on port 1337: ' + tcpServer.connections);
+
+	//Remind the socket who they're talking to "You talking to me?"
+    socket.write('Word, I\'m TCP. Pleasure is all mine I\'m sure.\r\n');
+
+	//Again, we like to brag.
+    console.log( tcpServer.connections + ' people are 1337');
     
+	//Welcome! We're gonna force your socket into an array
     tcpGuests.push(socket);
     
+	//When the TCP connection feels social. 
     socket.on('data',function(data){
-        console.log('received on tcp socket:'+data);
-        socket.write('msg received\r\n');
+
+	//Jordan's CC number here
+    console.log('This just in - ' + data );
+
+		  //Verbose.
+        socket.write('I got that thing you sent me!\r\n');
         
-        //send data to guest socket.io chat server
+      //For every blessed being
         for (g in io.clients) {
+
+				  //Superfluous definitions and stereotypes
             var client = io.clients[g];
+
+				  //Yell at them from across the street. 
             client.send({message:["arduino",data.toString('ascii',0,data.length)]});
             
         }
-    })
+    });
 });
+
+//The walls have ears.
 tcpServer.listen(1337);
+
+// ... cryptic revolution.
