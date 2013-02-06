@@ -54,21 +54,21 @@ var tcpGuests = [];
 var io = io.listen(server)
 
 //for your Buffer					
-  , buffer = [];
+	, buffer = [];
   
 //Connect to the HTTP Server's Socket
 io.on('connection', function(client){
 
-  //Send some data back to the client.
-  client.send({ 
+	//Send some data back to the client.
+	client.send({ 
 
-  	//Sync the buffer
-	buffer: buffer 
+		//Sync the buffer
+		buffer: buffer 
 
-  });
+	});
  
-  //Broadcast some ish
-  client.broadcast.send({ 
+	//Broadcast some ish
+	client.broadcast.send({ 
 	
 	//Yeah, you're legit (We're fairly presumptuous)
 	announcement: client.sessionId + ', ohhhhhhhhhh bakaw bakaw bakaw' 
@@ -78,35 +78,36 @@ io.on('connection', function(client){
   //Push the client as a Guest
   httpGuests.push(client);
   
-  //When something happens
-  client.on('message', function(message){
+	//When something happens
+	client.on('message', function(message){
 	
 	// Prepare the message for debugging.
-    var msg = { message: [client.sessionId, message] };
+	var msg = { message: [client.sessionId, message] };
 
 	// Push the message into the buffer.
-    buffer.push(msg);
+	buffer.push(msg);
 
 	//Leaky Pipes
-    if (buffer.length > 15) buffer.shift();
+	if (buffer.length > 15) buffer.shift();
 
 	//Send the client a debugging update
-    client.broadcast.send(msg);
+	client.broadcast.send(msg);
     
-    //For each TCP Connection
-    for (g in tcpGuests) {
-		
-		//Write a message. 
-        tcpGuests[g].write(message);
+   //For each TCP Connection
+	for (g in tcpGuests) {
 
-    }
+		//Write a message. 
+		tcpGuests[g].write(message);
+
+	}
+
   });
 
   //How rude, no goodbye?
   client.on('disconnect', function(){
 
-	//Tell them off.
-    client.broadcast.send({ announcement: client.sessionId + ' left the cult.' });
+		//Tell them off.
+		client.broadcast.send({ announcement: client.sessionId + ' left the cult.' });
 
   });
 
@@ -115,43 +116,45 @@ io.on('connection', function(client){
 //Hey bro, can I interest you in some TCP?
 var tcpServer = net.createServer(function (socket) {
  
-  //We like to brag.
-  console.log('TCP:1337');
-  console.log('HTTP:80');
+	//We like to brag.
+	console.log('TCP:1337');
+	console.log('HTTP:80');
 
 });
 
 tcpServer.on('connection',function(socket){
 
-		//Remind the socket who they're talking to "You talking to me?"
-    socket.write('Word, I\'m TCP. Pleasure is all mine I\'m sure.\r\n');
+	//Remind the socket who they're talking to "You talking to me?"
+	socket.write('Word, I\'m TCP. Pleasure is all mine I\'m sure.\r\n');
 
 	//Again, we like to brag.
-    console.log( tcpServer.connections + ' people are 1337');
+	console.log( tcpServer.connections + ' people are 1337');
     
-	 //Welcome! You're on the list
-    tcpGuests.push(socket);
+	//Welcome!
+	tcpGuests.push(socket);
     
-	 //When the TCP connection feels social. 
-    socket.on('data',function(data){
+	//When the TCP connection feels social. 
+	socket.on('data',function(data){
 
-		  //Jordan's CC number here
-        console.log('This just in - ' + data );
+		//Jordan's CC number here
+		console.log('This just in - ' + data );
 
-		  //Verbose.
-        socket.write('I got that thing you sent me!\r\n');
+		//Verbose.
+		socket.write('I got that thing you sent me!\r\n');
         
-		  //For every blessed being
-        for (g in io.clients) {
+		//For every blessed being
+		for (g in io.clients) {
 
 			//Remind them what they are to me.
-            var client = io.clients[g];
+			var client = io.clients[g];
 
-				//Yell at them from across the street. 
-            client.send({message:["arduino",data.toString('ascii',0,data.length)]});
-            
-        }
-    });
+			//Yell at them from across the street. 
+			client.send({message:["arduino",data.toString('ascii',0,data.length)]});
+           
+		}
+		
+	});
+	
 });
 
 //The walls have ears.
