@@ -73,10 +73,10 @@ io.on('connection', function(client){
 	//Yeah, you're legit (We're fairly presumptuous)
 	announcement: client.sessionId + ', ohhhhhhhhhh bakaw bakaw bakaw' 
 
-  });
+	});
   
-  //Push the client as a Guest
-  httpGuests.push(client);
+	//Push the client as a Guest
+ 	httpGuests.push(client);
   
 	//When something happens
 	client.on('message', function(message){
@@ -93,7 +93,7 @@ io.on('connection', function(client){
 	//Send the client a debugging update
 	client.broadcast.send(msg);
     
-   //For each TCP Connection
+	//For each TCP Connection
 	for (g in tcpGuests) {
 
 		//Write a message. 
@@ -101,7 +101,7 @@ io.on('connection', function(client){
 
 	}
 
-  });
+	});
 
   //How rude, no goodbye?
   client.on('disconnect', function(){
